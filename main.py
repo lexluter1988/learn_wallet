@@ -3,6 +3,7 @@ quit_recieved = False
 while not quit_recieved:
     command = str(input("prompt> "))
 # not working: NameError: name 'sfh' is not defined
+# interesting
     print(command)
     quit_recieved = (lambda x: x.startswith("quit"))(command)
 
