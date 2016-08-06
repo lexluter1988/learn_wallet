@@ -1,89 +1,97 @@
-import cPickle as pickle
+# import cPickle as pickle
+from datetime import datetime
 
 
 class Account(object):
     '''Base class for all accounts'''
 
-    def __init__(self, value=0, clean=False):
-        self.__description = 'Base Account Class - not for use!'
-        self.last_updated = ''
-        self.value = value
-        self.in_sync = False
+    def __init__(self, clean=False):
+        self.clean = clean
+        self.description = 'Base Account Class - not for use!'
+        self.__last_id = 0
+        self.__last_updated = ''
+        self.__value = 0
+        self.__in_sync = False
 
-    def get_balance(self):
-        # need try cause we have EOFError exception
-        try:
-            f = None
-            f = open('account.pickle', 'rb')
-            self.temp = pickle.load(f)
+    def clear(self):
+        if self.clean:
+            self.__last_id = 0
+            self.__value = 0
+            self.__in_sync = True
 
-        except IOError:
-            pass
-        except EOFError:
-            pass
+    @property
+    def last_id(self):
+        return self.__last_id
 
-        finally:
-            if f:
-                f.close()
+    @property
+    def last_updated(self):
+        return self.__last_updated
 
-    def set_balance(self):
-        pass
+    @property
+    def in_sync(self):
+        return self.__in_sync
 
-    def update_balance(self):
-        pass
+    def synchronize(self):
+        self.__last_updated = datetime.now().strftime("%Y-%m-%d %H:%M")
+        self.__last_id += 1
+        self.__in_sync = True
 
-    def save_data(self):
-        with open('account.pickle', 'wb') as f:
-            pickle.dump(self, f)
+    @property
+    def value(self):
+        return self.__value
 
-    def load_data(self):
-        pass
+    @value.setter
+    def value(self, value):
+        self.__value += value
+        self.synchronize()
+        return True
+
+    # def get_balance(self):
+    #     # need try cause we have EOFError exception
+    #     try:
+    #         f = None
+    #         f = open('account.pickle', 'rb')
+    #         self.temp = pickle.load(f)
+
+    #     except IOError:
+    #         pass
+    #     except EOFError:
+    #         pass
+
+    #     finally:
+    #         if f:
+    #             f.close()
 
     def __repr__(self):
         text = super(Account, self).__repr__()
-        return "\"[{0}]\" object: {1}".format(self.__description, text)
+        return "\"[{0}]\" object: {1}".format(self.description, text)
 
 
 class Cash(Account):
     '''Just cash account where paper money are stored'''
 
-    def __init__(self, value=0, clean=False):
+    def __init__(self, clean=False):
         self.description = 'Cash Account'
-        self.last_updated = ''
-        self.value = 0
-        self.in_sync = False
 
 
 class Credit(Account):
     '''Credit account where credit card balance stored'''
 
-    def __init__(self, value=0, clean=False):
+    def __init__(self, clean=False):
         self.description = 'Credit Account'
-        self.last_updated = ''
-        self.value = 0
-        self.interest_rate = 0
-        self.in_sync = False
+        self.rate = 0
 
 
 class Debit(Account):
     '''Debit account where salary card balance is stored'''
 
-    def __init__(self, value=0, clean=False):
+    def __init__(self, clean=False):
         self.description = 'Debit Account'
-        self.last_updated = ''
-        self.value = 0
-        self.in_sync = False
 
 
 class Savings(Account):
     '''Savings account where $ and other savings are stored'''
 
-    def __init__(self, value=0, clean=False):
+    def __init__(self, clean=False):
         self.description = 'Savings Account'
-        self.last_updated = ''
-        self.value = 0
         self.currency = 'RUB'
-        self.in_sync = False
-
-
-

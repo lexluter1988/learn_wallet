@@ -13,19 +13,27 @@ class Api(object):
 # responce = get_resource_usage_for_period(sub_id,api)
 # return api.execute('pem.getResourceUsageForPeriod', **params)
 
-    def __init__(self, connection):
-        self.connection = connection
+#    def __init__(self, connection):
+#        self.connection = connection
 
-    def execute(self, method, **params):
-        response = getattr(self.connection, method)(
-            params)  # Hack from poaupdater
-        if response['status'] != 0:
-            self.txn_id = None
-            raise Exception('Method {0} returned non-zero status {1} and\
-                             error {2}'.format(method, response['status'],
-                                               response['error_message']))
-        else:
-            return response.get('result', None)
+#    def execute(self, method, **params):
+
+# Return the value of the named attribute of object.
+# name must be a string.  getattr(object, name[, default])
+# If the string is the name of one of the object’s attributes,
+# the result is the value of that attribute.
+# For example, getattr(x, 'foobar') is equivalent to x.foobar.
+
+#        response = getattr(self.connection, method)(params)
+# Hack from poaupdater
+#        if response['status'] != 0:
+#            self.txn_id = None
+#            raise Exception('Method {0} returned non-zero status {1} and\
+#                             error {2}'.format(method, response['status'],
+#                                               response['error_message']))
+#        else:
+#            return response.get('result', None)
+
 
 # usefully for waiting inputs
 # and proceed them as commands
