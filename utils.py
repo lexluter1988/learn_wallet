@@ -27,6 +27,26 @@ class Api(object):
         else:
             return response.get('result', None)
 
+# usefully for waiting inputs
+# and proceed them as commands
+got_quit = False
+
+
+def proceed(cmd):
+    if not cmd:
+        return False
+    elif cmd.lower().startswith("quit"):
+        return True
+    else:
+        return False
+
+while not got_quit:
+    # in python 2 need to use raw_input instead of input
+    # or we got ints, emptys, and eventually got
+    # SyntaxError: unexpected EOF while parsing
+    command = raw_input("====> ")
+    got_quit = proceed(command)
+
 
 def slow_type(t):
     # delay for typing
@@ -37,7 +57,8 @@ def slow_type(t):
         time.sleep(random.random() * 10.0 / typing_speed)
     print ''
 
-
+# need to move messages and
+# help to separate files
 message = '''
 Welcome to the Fucking Wallet!
 Go on tutorial by typing \'tutorial'

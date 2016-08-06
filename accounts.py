@@ -5,7 +5,7 @@ class Account(object):
     '''Base class for all accounts'''
 
     def __init__(self, value=0, clean=False):
-        self.description = 'Base Account'
+        self.__description = 'Base Account Class - not for use!'
         self.last_updated = ''
         self.value = value
         self.in_sync = False
@@ -41,7 +41,7 @@ class Account(object):
 
     def __repr__(self):
         text = super(Account, self).__repr__()
-        return "\"[{0}]\" object: {1}".format(self.description, text)
+        return "\"[{0}]\" object: {1}".format(self.__description, text)
 
 
 class Cash(Account):
