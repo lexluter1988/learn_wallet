@@ -1,3 +1,3 @@
-from memory_classes import BalanceHistory
+from memory import BalanceHistory
 
 obje = BalanceHistory()

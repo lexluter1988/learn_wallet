@@ -1,3 +1,3 @@
-from memory_classes import BalanceRecord
+from memory import BalanceRecord
 
 obje = BalanceRecord()

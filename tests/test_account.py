@@ -1,3 +1,3 @@
-from account_classes import Account
+from accounts import Account
 
 obje = Account()
