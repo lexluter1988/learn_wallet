@@ -3,18 +3,22 @@ import sys
 
 
 class CmdLog(type):
+    '''Commands logger metaclass, used only for commands'''
 
     def __new__(cls, name, bases, namespace, **kwargs):
+        # basic metaclass override of new method
         result = type.__new__(cls, name, bases, dict(namespace))
         # changing logger to strdout
         out_handler = logging.StreamHandler(sys.stdout)
-        # format for output
 
+        # format logger to write in stdout
+        # we write in format like:
+        # '1970-01-10, 15:49:12,913 [INFO] [CheckMeta] - Hello World!'
         out_handler.setFormatter(logging.Formatter(
                 '%(asctime)s [%(levelname)s] [%(name)s] - %(message)s'))
         out_handler.setLevel(logging.DEBUG)
 
-        # adjust out logger
+        # adjust our metaclass to contain logger from beginning
         result.logger = logging.getLogger(name)
         result.logger.addHandler(out_handler)
         result.logger.setLevel(logging.DEBUG)
@@ -23,6 +27,7 @@ class CmdLog(type):
 
 
 class CheckMeta(object):
+    '''Just an useless class for checking metaclass and logger'''
     __metaclass__ = CmdLog
 
     def __init__(self, value):
@@ -34,19 +39,35 @@ class CheckMeta(object):
 
 
 class CmdMux(object):
-    '''This is main control unit, sends command to all units'''
+    '''This is the main control unit, sends command to all units'''
+
+    # use our logger metaclass
+    __metaclass__ = CmdLog
+    # tuple of commands we can call, global and static
     commands_list = (
-        'empty-wallet',
+        'help',
+        'tutorial',
+        'erase',
+        'wallet',
+        'balance',
+        'debit',
+        'credit',
+        'payments',
+        'history',
+        'withdraw',
         'record-payment',
-        'get-balance',
+        'quit',
     )
 
     def __init__(self):
-        pass
+        self.logger.debug("created commands multiplexer")
 
 
 class OutDevice(object):
-    '''This class corresponds for output format for any consumer'''
+    '''This class corresponds for output format for any consumers'''
+
+    # use our logger metaclass
+    __metaclass__ = CmdLog
 
     def __init__(self):
         pass
