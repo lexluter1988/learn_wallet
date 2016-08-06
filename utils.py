@@ -2,16 +2,41 @@ import sys
 import time
 import random
 
-# wpm
-typing_speed = 50
+
+class Api(object):
+    '''class from poaupdater who uses getattr to execute method
+        based on string input name '''
+
+# sub_id = int(sys.argv[1])
+# connection = connect_via_rpc("192.168.133.12")
+# api = Api(connection)
+# responce = get_resource_usage_for_period(sub_id,api)
+# return api.execute('pem.getResourceUsageForPeriod', **params)
+
+    def __init__(self, connection):
+        self.connection = connection
+
+    def execute(self, method, **params):
+        response = getattr(self.connection, method)(
+            params)  # Hack from poaupdater
+        if response['status'] != 0:
+            self.txn_id = None
+            raise Exception('Method {0} returned non-zero status {1} and\
+                             error {2}'.format(method, response['status'],
+                                               response['error_message']))
+        else:
+            return response.get('result', None)
 
 
 def slow_type(t):
+    # delay for typing
+    typing_speed = 50
     for l in t:
         sys.stdout.write(l)
         sys.stdout.flush()
         time.sleep(random.random() * 10.0 / typing_speed)
     print ''
+
 
 message = '''
 Welcome to the Fucking Wallet!
