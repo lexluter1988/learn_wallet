@@ -13,6 +13,8 @@ quit_recieved = False
 # entry point for program
 # infinite loop till KeyboardInterrupt
 # or 'quit' command
+out.send_data(mux, 'hello')
+
 while not quit_recieved:
     try:
         command = raw_input("prompt> ")
@@ -23,6 +25,7 @@ while not quit_recieved:
         else:
             out.send_data(mux, command)
     except KeyboardInterrupt:
-        print(" goodbye fella!")
+        out.send_data(mux, 'quit')
         exit(0)
-print(" goodbye fella!")
+
+out.send_data(mux, 'quit')

@@ -4,6 +4,10 @@ class Messages(object):
     Welcome to \'Fucking Wallet\'!
     '''
 
+    quit_message = '''
+    Goodbye Fella!
+    '''
+
     help_message = '''
     'help' - to get cmd list
     'tutorial' - to get full description

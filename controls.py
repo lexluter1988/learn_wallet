@@ -55,6 +55,14 @@ class CmdMux(object):
     def __init__(self):
         self.logger.debug("Created multiplexer for user's commands")
 
+    def hello(self):
+        self.logger.debug("Entering into programm")
+        return msg.hello_message
+
+    def quit(self):
+        self.logger.debug("Exiting from programm")
+        return msg.quit_message
+
     def help(self):
         self.logger.debug("Asking for help")
         return msg.help_message
