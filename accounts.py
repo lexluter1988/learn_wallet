@@ -80,3 +80,4 @@ class Savings(Account):
         super(Savings, self).__init__()
         self.description = 'Savings'
         self.currency = 'RUB'
+        self.exchange_rate = 1

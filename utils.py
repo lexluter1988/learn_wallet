@@ -3,9 +3,9 @@ import time
 import random
 
 
-class Api(object):
-    '''class from poaupdater who uses getattr to execute method
-        based on string input name '''
+# class Api(object):
+#    '''class from poaupdater who uses getattr to execute method
+#        based on string input name '''
 
 # sub_id = int(sys.argv[1])
 # connection = connect_via_rpc("192.168.133.12")

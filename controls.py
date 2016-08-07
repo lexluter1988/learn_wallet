@@ -2,6 +2,43 @@ import logging
 import sys
 
 
+# tuple of commands we can call, global and static
+commands_list = (
+    'help',
+    'tutorial',
+    'erase',
+    'wallet',
+    'balance',
+    'debit',
+    'credit',
+    'payments',
+    'history',
+    'withdraw',
+    'record-payment',
+    'quit',
+    )
+
+help_message = '''
+Welcome to the Fucking Wallet!
+Go on tutorial by typing \'tutorial'
+Or just ask 'help' to list all the commands
+
+Start by initiating your empty wallet #looser
+\'erase\'
+Then go and put something into your cash (cash)
+Then go and put some credit (credit), debit(debit)
+
+And if you are so lucky and have some savings
+Go the put some savings (saving)
+
+List your balance (balance)
+And see your history (history)
+
+And then you can go and spend deeze nuts!
+Good luck!
+'''
+
+
 class CmdLog(type):
     '''Commands logger metaclass, used only for commands'''
 
@@ -43,24 +80,18 @@ class CmdMux(object):
 
     # use our logger metaclass
     __metaclass__ = CmdLog
-    # tuple of commands we can call, global and static
-    commands_list = (
-        'help',
-        'tutorial',
-        'erase',
-        'wallet',
-        'balance',
-        'debit',
-        'credit',
-        'payments',
-        'history',
-        'withdraw',
-        'record-payment',
-        'quit',
-    )
 
     def __init__(self):
-        self.logger.debug("created commands multiplexer")
+        self.logger.debug("Created multiplexer for user's commands")
+
+    def help(self):
+        self.logger.debug("Asking for help message")
+        return help_message
+
+    def quit(self):
+        self.logger.debug("Got quit request, finishing programm")
+        message = "got guit signal"
+        return message
 
 
 class OutDevice(object):
