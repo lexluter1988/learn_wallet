@@ -10,13 +10,20 @@ class Messages(object):
 
     help_message = '''
     [basics]
+        'open_account name=<account name>' - open your account
+        'new_account name=<account name>
+                cash=<value>
+                debit=<value>
+                credit=<value>
+                savings=<value>' - create new account with all settings
+
         'help' - to get cmd list
         'tutorial' - to get full description
         'quit' - just quit program
 
     [operations]
         'income <cash|debit|credit|savings> <sum>' - put money
-        'pay <cash|debit|credit|savings> <sum>' - spend money
+        'pay <cash|debit|credit|savings> <sum> <comment>' - spend money
         'withdraw <debit|credit|savings> <amount>' - from any account into cash
 
     [stats]
@@ -34,7 +41,8 @@ class Messages(object):
     tutorial_message = '''
     Welcome to the tutorial!
 
-    Start using your wallet, it's already initiated
+    Start using your wallet, create new one (new_account)
+    Or continue using your old file (open_account)
     List your current stats for all stores (balance)
     Or list specific store (cash|debit|credit|savings)
     See your history (history) for last days
@@ -46,9 +54,12 @@ class Messages(object):
     '''
 
     no_account_message = '''
-    You haven't opened any account.
+    You haven't opened any account
+
     Please initiate new one(new_account)
-    Or open existing (new_account)
+    Or open existing (open_account)
+
+    You can also see 'help' page and 'tutorial'
     '''
 
     new_account_message = '''Account for you created'''

@@ -7,7 +7,6 @@ from controls import Bus
 mux = CmdMux()
 bus = Bus()
 
-account_inited = mux.account_opened
 # global quit variable
 quit_recieved = False
 
@@ -21,11 +20,22 @@ while not quit_recieved:
         command = raw_input("prompt> ")
         if not command:
             continue
-        elif not account_inited:
-            bus.send_data(mux, 'no_account')
-        # simply exit with no call to multiplexer
+        # we can affort send user messages for tutor and help
+        # even if he have not account yet
+        elif (lambda x: isinstance(x, str)
+              and (x.startswith("help")
+                   or x.startswith("tutorial")
+                   or x.startswith("new_account")
+                   or x.startswith("open_account")))(command):
+            bus.send_data(mux, command)
+        # also we allow to quit from program
+        # obviously
         elif (lambda x: isinstance(x, str) and x.startswith("quit"))(command):
             break
+        # and then we checkout if user have or not have any account
+        elif not mux.account_opened:
+            bus.send_data(mux, 'no_account')
+        # simply exit with no call to multiplexer
         else:
             # we just send string to multiplexer
             # ther we will parse and take arguments

@@ -8,12 +8,11 @@ class BalanceHistory(object):
     def __init__(self):
         pass
 
-    def save_a_lot(self):
-        biig = []
-        for i in range(1000000):
-            itemm = BalanceRecord(i)
-            biig.append(itemm)
+    def put_record(self):
+        pass
 
+    def get_record(self):
+        pass
 # You can select the latest protocol with the -1 argument.
 # if we use slots and pickle, we got
 # TypeError: a class that defines __slots__ without
@@ -24,8 +23,8 @@ class BalanceHistory(object):
 # This message comes from the oldest protocol, which is the default.
 # In Python 2.7 this would be 2 (which was introduced in 2.3),
 # and in 3.6 it is 4.
-        with open('records.pickle', 'wb') as f:
-            pickle.dump(biig, f, -1)
+#        with open('records.pickle', 'wb') as f:
+#            pickle.dump(biig, f, -1)
 
 # just perfectly saved and loaded
 # list stores array of our needed objects ideally
@@ -50,13 +49,20 @@ class PayHistory(object):
     def __init__(self):
         pass
 
+    def put_payment(self):
+        pass
+
+    def get_payment(self):
+        pass
+
 
 class PayRecord(object):
     '''Class ready to be stored in history of Payments Incomes'''
-    __slots__ = ['id', 'date', 'category', 'value']
+    __slots__ = ['id', 'date', 'category', 'value', 'comment']
 
     def __init__(self):
         self.id = 0
         self.date = datetime.now().strftime("%Y-%m-%d %H:%M")
         self.category = 0
         self.value = 0
+        self.comment = ''
