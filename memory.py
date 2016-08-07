@@ -1,4 +1,5 @@
 import cPickle as pickle
+from datetime import datetime
 
 
 class BalanceHistory(object):
@@ -13,6 +14,16 @@ class BalanceHistory(object):
             itemm = BalanceRecord(i)
             biig.append(itemm)
 
+# You can select the latest protocol with the -1 argument.
+# if we use slots and pickle, we got
+# TypeError: a class that defines __slots__ without
+# defining __getstate__ cannot be pickled
+
+# BUT
+# This is actually incorrect.
+# This message comes from the oldest protocol, which is the default.
+# In Python 2.7 this would be 2 (which was introduced in 2.3),
+# and in 3.6 it is 4.
         with open('records.pickle', 'wb') as f:
             pickle.dump(biig, f, -1)
 
@@ -22,25 +33,15 @@ class BalanceHistory(object):
 
 class BalanceRecord(object):
     '''This is just record ready to be stored in history'''
-    __slots__ = ['id', 'date', 'category', 'amount', 'comment']
+    __slots__ = ['id', 'date', 'cash', 'debit', 'credit', 'savings']
 
-# if we use slots and pickle, we got
-# TypeError: a class that defines __slots__ without
-# defining __getstate__ cannot be pickled
-
-# BUT
-# This is actually incorrect.
-# This message comes from the oldest protocol, which is the default.
-# You can select the latest protocol with the -1 argument.
-# In Python 2.7 this would be 2 (which was introduced in 2.3),
-# and in 3.6 it is 4.
-
-    def __init__(self, amount=0, category='cash', *args):
+    def __init__(self):
         self.id = 0
-        self.date = '2016-08-03'
-        self.category = category
-        self.amount = amount
-        self.comment = args
+        self.date = datetime.now().strftime("%Y-%m-%d %H:%M")
+        self.cash = 0
+        self.debit = 0
+        self.credit = 0
+        self.savings = 0
 
 
 class PayHistory(object):
@@ -50,12 +51,12 @@ class PayHistory(object):
         pass
 
 
-# actually really shitty name for class
-# too fucking long
-
-
 class PayRecord(object):
     '''Class ready to be stored in history of Payments Incomes'''
+    __slots__ = ['id', 'date', 'category', 'value']
 
     def __init__(self):
-        pass
+        self.id = 0
+        self.date = datetime.now().strftime("%Y-%m-%d %H:%M")
+        self.category = 0
+        self.value = 0

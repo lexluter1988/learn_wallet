@@ -9,19 +9,27 @@ class Messages(object):
     '''
 
     help_message = '''
-    'help' - to get cmd list
-    'tutorial' - to get full description
-    'init <cash|debit|credit|savings|>' - initiate wallet
-    'balance' - show current stats of your wallet
-    'cash'- how much cash you have
-    'debit' - how much on salary account
-    'credit' - how much on credit
-    'history <last records>, default=5>' - show last balance changes
-    'payments <last records>, default=5>' - show last payments
-    'withdraw <amount>' - take money from credit or debit account into cash
-    'pay <cash|debit|credit|savings|> <sum> <comment>' - spend money
-    'earn <cash|debit|credit|savings|> <sum> <comment>' - put money
-    'quit' - just quit program
+    [basics]
+        'help' - to get cmd list
+        'tutorial' - to get full description
+        'quit' - just quit program
+
+    [operations]
+        'init' - initiate wallet
+        'income <cash|debit|credit|savings> <sum>' - put money
+        'pay <cash|debit|credit|savings> <sum>' - spend money
+        'withdraw <debit|credit|savings> <amount>' - from any account into cash
+
+    [stats]
+        'balance' - show current stats of your wallet
+        'cash'- how much cash you have
+        'debit' - how much on salary account
+        'credit' - how much you own
+        'savings' - how much you save for your future
+
+    [history]
+        'history <last records>, default=5>' - show last balance changes
+        'payments <last records>, default=5>' - show last payments
     '''
 
     tutorial_message = '''
@@ -36,4 +44,8 @@ class Messages(object):
     Pay for something (pay) or withdraw your cash
     When payday come - put (earn) something in any of your account
     Good luck!
+    '''
+
+    balance_message = '''
+    Here is your balance
     '''

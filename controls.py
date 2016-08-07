@@ -9,8 +9,8 @@ from messages import Messages as msg
 commands_list = (
     'help',
     'tutorial',
+    'quit',
     'init',
-    'wallet',
     'balance',
     'debit',
     'credit',
@@ -18,7 +18,6 @@ commands_list = (
     'history',
     'withdraw',
     'pay',
-    'quit',
     )
 
 
@@ -71,15 +70,25 @@ class CmdMux(object):
         self.logger.debug("Asking for tutorial")
         return msg.tutorial_message
 
+    def balance(self, record):
+        self.logger.debug("Getting current balance")
+        cash_val = record[0]['cash'].value
+        debit_val = record[0]['debit'].value
+        credit_val = record[0]['credit'].value
+        savings_val = record[0]['savings'].value
+        out = "Cash:{0} | Credit:{1} | Debit:{2} | Savings:{3}\n{4}".format(
+            cash_val, debit_val, credit_val, savings_val, msg.balance_message)
+        return out
 
-class OutDevice(object):
+
+class Bus(object):
     '''This class corresponds for output format for any consumers'''
 
     # use our logger metaclass
     __metaclass__ = CmdLog
 
     def __init__(self):
-        self.logger.debug("Created output device")
+        self.logger.debug("Created data bus device")
 
     def slow_type(self, message):
         '''human typing style function to make printing pretty'''
@@ -90,10 +99,13 @@ class OutDevice(object):
             time.sleep(random.random() * 10.0 / typing_delay)
         print ''
 
-    def send_data(self, cls, cmd, **kwargs):
+    def send_data(self, cls, cmd, *args):
         '''dispatcher of commands to CmdMux class'''
         try:
-            result_message = getattr(cls, cmd)()
+            if cmd == 'balance':
+                result_message = getattr(cls, cmd)(args)
+            else:
+                result_message = getattr(cls, cmd)()
             self.slow_type(result_message)
         except AttributeError:
             print("there is not such command: {0}..try again!".format(cmd))
