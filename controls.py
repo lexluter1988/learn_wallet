@@ -1,5 +1,6 @@
 import logging
 import sys
+from messages import Messages as msg
 
 
 # tuple of commands we can call, global and static
@@ -14,29 +15,9 @@ commands_list = (
     'payments',
     'history',
     'withdraw',
-    'record-payment',
+    'pay',
     'quit',
     )
-
-help_message = '''
-Welcome to the Fucking Wallet!
-Go on tutorial by typing \'tutorial'
-Or just ask 'help' to list all the commands
-
-Start by initiating your empty wallet #looser
-\'erase\'
-Then go and put something into your cash (cash)
-Then go and put some credit (credit), debit(debit)
-
-And if you are so lucky and have some savings
-Go the put some savings (saving)
-
-List your balance (balance)
-And see your history (history)
-
-And then you can go and spend deeze nuts!
-Good luck!
-'''
 
 
 class CmdLog(type):
@@ -85,13 +66,16 @@ class CmdMux(object):
         self.logger.debug("Created multiplexer for user's commands")
 
     def help(self):
-        self.logger.debug("Asking for help message")
-        return help_message
+        self.logger.debug("Asking for help")
+        return msg.help_message
+
+    def tutorial(self):
+        self.logger.debug("Asking for tutorial")
+        return msg.tutorial_message
 
     def quit(self):
         self.logger.debug("Got quit request, finishing programm")
-        message = "got guit signal"
-        return message
+        return msg.quit_message
 
 
 class OutDevice(object):
