@@ -1,5 +1,7 @@
 import logging
 import sys
+import time
+import random
 from messages import Messages as msg
 
 
@@ -7,7 +9,7 @@ from messages import Messages as msg
 commands_list = (
     'help',
     'tutorial',
-    'erase',
+    'init',
     'wallet',
     'balance',
     'debit',
@@ -44,18 +46,6 @@ class CmdLog(type):
         return result
 
 
-class CheckMeta(object):
-    '''Just an useless class for checking metaclass and logger'''
-    __metaclass__ = CmdLog
-
-    def __init__(self, value):
-        self.value = value
-        self.logger.debug("testing logger, value is {0}".format(value))
-
-    def show_logs(self):
-        self.logger.info("hello child, you said {0}".format(self.value))
-
-
 class CmdMux(object):
     '''This is the main control unit, sends command to all units'''
 
@@ -73,10 +63,6 @@ class CmdMux(object):
         self.logger.debug("Asking for tutorial")
         return msg.tutorial_message
 
-    def quit(self):
-        self.logger.debug("Got quit request, finishing programm")
-        return msg.quit_message
-
 
 class OutDevice(object):
     '''This class corresponds for output format for any consumers'''
@@ -85,4 +71,21 @@ class OutDevice(object):
     __metaclass__ = CmdLog
 
     def __init__(self):
-        pass
+        self.logger.debug("Created output device")
+
+    def slow_type(self, message):
+        '''human typing style function to make printing pretty'''
+        typing_delay = 300
+        for ch in message:
+            sys.stdout.write(ch)
+            sys.stdout.flush()
+            time.sleep(random.random() * 10.0 / typing_delay)
+        print ''
+
+    def send_data(self, cls, cmd, **kwargs):
+        '''dispatcher of commands to CmdMux class'''
+        try:
+            result_message = getattr(cls, cmd)()
+            self.slow_type(result_message)
+        except AttributeError:
+            print("there is not such command: {0}..try again!".format(cmd))
