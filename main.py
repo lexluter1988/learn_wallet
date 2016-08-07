@@ -1,35 +1,13 @@
 from controls import CmdMux
 from controls import Bus
-from accounts import Cash, Debit, Credit, Savings
-from memory import BalanceRecord, PayRecord
 
-# instantiate you Commands Multiplexer
+# instantiate you Commands Multiplexer and Data/Commands bus
 # it will take all commands and return results
 # from appropriate methods
 mux = CmdMux()
 bus = Bus()
 
-cash = Cash()
-cash.value = 1
-debit = Debit()
-debit.value = 16000
-credit = Credit()
-credit.value = -150000
-savings = Savings()
-savings.value = 71000
-one_record = PayRecord()
-one_history = BalanceRecord()
-
-record = {'cash': cash,
-          'debit': debit,
-          'credit': credit,
-          'savings': savings,
-          'history': [one_history, ],
-          'records': [one_record, ],
-          }
-
-# print(record)
-
+account_inited = mux.account_opened
 # global quit variable
 quit_recieved = False
 
@@ -43,10 +21,17 @@ while not quit_recieved:
         command = raw_input("prompt> ")
         if not command:
             continue
+        elif not account_inited:
+            bus.send_data(mux, 'no_account')
+        # simply exit with no call to multiplexer
         elif (lambda x: isinstance(x, str) and x.startswith("quit"))(command):
             break
         else:
-            bus.send_data(mux, command, record)
+            # we just send string to multiplexer
+            # ther we will parse and take arguments
+            # main file is just like console for user
+            # all internal calculations are hided
+            bus.send_data(mux, command)
     except KeyboardInterrupt:
         bus.send_data(mux, 'quit')
         exit(0)
