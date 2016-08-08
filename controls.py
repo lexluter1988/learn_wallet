@@ -2,10 +2,10 @@ import logging
 import sys
 import time
 import random
-from messages import Messages as msg
-from accounts import Cash, Debit, Credit, Savings
 import cPickle as pickle
 from utils import Parsers
+from messages import Messages as msg
+from accounts import Cash, Debit, Credit, Savings
 from memory import BalanceHistory, BalanceRecord, PayHistory, PayRecord
 
 
@@ -27,16 +27,17 @@ static_commands = (
     )
 
 # tuple of commands which take exact one argument
-# example 1: new_account wallet cash=100 debit=0 credit=0 savings=0
-# example 2: open_account wallet
-# example 3: pay cash 1000 bitches
-# example 4: withdraw credit 100
-# example 5: history 100
+# example 1: new_account name=wallet cash=100 debit=0 credit=0 savings=0
+# example 2: open_account name=wallet
+# example 3: pay category=cash value=1000 comment=bitches
+# example 4: withdraw category=credit value=100
+# example 5: history records=100
 operation_list = (
     'new_account',
     'open_account',
     'pay',
     'withdraw',
+    'income',
     )
 
 history_list = (
@@ -99,16 +100,44 @@ class CmdMux(object):
         blueprint = self.prs.new_account_check(params)
         if blueprint:
             self.account_opened = True
+
+            tmpname, tmpcash, tmpdebit, tmpcredit, tmpsavings =\
+                blueprint['name'], Cash(), Debit(), Credit(), Savings()
+            tmpcash.value = int(blueprint['cash'])
+            tmpdebit.value = int(blueprint['debit'])
+            tmpcredit.value = int(blueprint['credit'])
+            tmpsavings.value = int(blueprint['savings'])
+
+            self.account = {
+                'name': tmpname,
+                'cash': tmpcash,
+                'debit': tmpdebit,
+                'credit': tmpcredit,
+                'savings': tmpsavings,
+            }
+            self.__save()
             return msg.new_account_message
         else:
             return msg.basic_input_error
 
     def open_account(self, params):
-        print(params)
         self.logger.debug("Opening your account")
-        self.account_opened = True
-        return msg.open_account_message
-        self.account
+        account_name = self.prs.open_account_check(params)
+        if account_name:
+            try:
+                with open(account_name+'.pickle', 'rb') as f:
+                    self.account = pickle.load(f)
+                    self.account_opened = True
+                    return msg.open_account_message
+            except TypeError:
+                self.logger.error("Failure during opening")
+                return msg.basic_input_error
+            except IOError:
+                self.logger.error("Account does not exist")
+                return msg.basic_input_error
+        else:
+            self.account_opened = False
+            return msg.basic_input_error
 
     # info methods that do not need any value or calculation
     def hello(self):
@@ -130,48 +159,50 @@ class CmdMux(object):
     # status methdos, that needs objects of accounts and record
     def balance(self):
         self.logger.debug("Getting current balance")
-        return msg.balance_message
+        account_name = self.account['name']
+        out = [self.cash(), self.debit(), self.credit(), self.savings()]
+        return "{0} of {1} account\n {2}".format(msg.balance_message,
+                                                 account_name, out)
 
     def cash(self):
         self.logger.debug("Getting your cash")
-        return msg.cash_message
+        account_cash = self.account['cash'].value
+        return "{0}: {1}".format(msg.cash_message, account_cash)
 
     def debit(self):
         self.logger.debug("Getting your debit account")
-        return msg.debit_message
+        account_debit = self.account['debit'].value
+        return "{0}: {1}".format(msg.debit_message, account_debit)
 
     def credit(self):
         self.logger.debug("Getting your credit account")
-        return msg.credit_message
+        account_credit = self.account['credit'].value
+        return "{0}: {1}".format(msg.credit_message, account_credit)
 
     def savings(self):
         self.logger.debug("Getting your savings")
-        return msg.savings_message
+        account_savings = self.account['savings'].value
+        return "{0}: {1}".format(msg.savings_message, account_savings)
 
     # history methods, for last payments and balance history
     def history(self, params):
-        print(params)
         self.logger.debug("Getting your last balance history")
         return msg.history_message
 
     def payments(self, params):
-        print(params)
         self.logger.debug("Getting you last payments")
         return msg.payments_message
 
     # real operation methods
     def pay(self, params):
-        print(params)
         self.logger.debug("Paying for something")
         return msg.pay_message
 
     def income(self, params):
-        print(params)
         self.logger.debug("Great, we got money now")
         return msg.income_message
 
     def withdraw(self, params):
-        print(params)
         self.logger.debug("Taking money from acoount to cash")
         return msg.withdraw_message
 

@@ -22,9 +22,16 @@ class Messages(object):
         'quit' - just quit program
 
     [operations]
-        'income <cash|debit|credit|savings> <sum>' - put money
-        'pay <cash|debit|credit|savings> <sum> <comment>' - spend money
-        'withdraw <debit|credit|savings> <amount>' - from any account into cash
+        'income
+            category=<cash|debit|credit|savings>
+            value=<sum>' - put money
+        'pay
+            category=<cash|debit|credit|savings>
+            value=<sum>
+            comment=<comment>' - spend money
+        'withdraw
+            category=<debit|credit|savings>
+            value=<amount>' - from any account into cash
 
     [stats]
         'balance' - show current stats of your wallet
@@ -34,8 +41,8 @@ class Messages(object):
         'savings' - how much you save for your future
 
     [history]
-        'history <last records>, default=5>' - show last balance changes
-        'payments <last records>, default=5>' - show last payments
+        'history records=<last records>' - show last balance changes
+        'payments records<last records>' - show last payments
     '''
 
     tutorial_message = '''
