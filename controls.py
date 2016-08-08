@@ -5,6 +5,7 @@ import random
 from messages import Messages as msg
 from accounts import Cash, Debit, Credit, Savings
 import cPickle as pickle
+from utils import Parsers
 from memory import BalanceHistory, BalanceRecord, PayHistory, PayRecord
 
 
@@ -22,6 +23,7 @@ static_commands = (
     'debit',
     'credit',
     'no_account',
+    'savings'
     )
 
 # tuple of commands which take exact one argument
@@ -69,11 +71,11 @@ class CmdLog(type):
 
 class CmdMux(object):
     '''This is the main control unit, sends command to all units'''
-
     # use our logger metaclass
     __metaclass__ = CmdLog
 
     def __init__(self):
+        self.prs = Parsers()
         self.account_opened = False
         self.logger.debug("Created multiplexer for user's commands")
 
@@ -94,24 +96,12 @@ class CmdMux(object):
         # [name, cash, debit, credit, savings]):
         # cannot check cause
         # UnboundLocalError: local variable 'cash' referenced before assignment
-
-        name = 'name'
-        tmp_cash = Cash()
-        tmp_debit = Debit()
-        tmp_credit = Credit()
-        tmp_savings = Savings()
-
-        self.account = {'name': name,
-                        'cash': tmp_cash,
-                        'debit': tmp_debit,
-                        'credit': tmp_credit,
-                        'savings': tmp_savings,
-                        'balance_history': BalanceHistory(),
-                        'payments_history': PayHistory(),
-                        }
-        self.__save()
-        self.account_opened = True
-        return msg.new_account_message
+        blueprint = self.prs.new_account_check(params)
+        if blueprint:
+            self.account_opened = True
+            return msg.new_account_message
+        else:
+            return msg.basic_input_error
 
     def open_account(self, params):
         print(params)
@@ -213,8 +203,7 @@ class Bus(object):
 
     def send_data(self, cls, cmd):
         '''dispatcher of commands to CmdMux class'''
-        params = cmd.split()
-        action = params.pop(0)
+        action = cmd.split()[0]
         # we do not need actually to call regexp here
         # method of Mux will parse params and validate them
         # and send appropriate message
@@ -222,7 +211,7 @@ class Bus(object):
             if action in static_commands:
                 result_message = getattr(cls, action)()
             else:
-                result_message = getattr(cls, action)(params)
+                result_message = getattr(cls, action)(cmd)
             self.slow_type(result_message)
         except AttributeError:
             print("there is not such command: {0}..try again!".format(action))

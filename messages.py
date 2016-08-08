@@ -75,3 +75,6 @@ class Messages(object):
     income_message = '''We got money'''
     withdraw_message = '''Taking money from account to cash'''
     save_message = '''Data saved'''
+
+# errors
+    basic_input_error = '''You entered incorrect values'''

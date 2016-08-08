@@ -88,7 +88,7 @@ class Parsers(object):
         pass
 
     def new_account_check(self, cmd):
-        check = re.match(self.new_account_pattern, cmd)
+        check = re.match(self.new_account_pattern, str(cmd))
         if check:
             blueprint = {'name': check.group('name'),
                          'cash': check.group('cash'),
@@ -100,28 +100,28 @@ class Parsers(object):
             return False
 
     def open_account_check(self, cmd):
-        check = re.match(self.open_account_pattern, cmd)
+        check = re.match(self.open_account_pattern, str(cmd))
         if check:
             return check.group('name')
         else:
             return False
 
     def history_check(self, cmd):
-        check = re.match(self.history_pattern, cmd)
+        check = re.match(self.history_pattern, str(cmd))
         if check:
             return check.group('records')
         else:
             return False
 
     def payments_check(self, cmd):
-        check = re.match(self.payments_pattern, cmd)
+        check = re.match(self.payments_pattern, str(cmd))
         if check:
             return check.group('records')
         else:
             return False
 
     def income_check(self, cmd):
-        check = re.match(self.income_pattern, cmd)
+        check = re.match(self.income_pattern, str(cmd))
         if check:
             blueprint = {'value': check.group('value'),
                          'category': check.group('category'),
@@ -131,7 +131,7 @@ class Parsers(object):
             return False
 
     def withdraw_check(self, cmd):
-        check = re.match(self.withdraw_pattern, cmd)
+        check = re.match(self.withdraw_pattern, str(cmd))
         if check:
             blueprint = {'category': check.group('category'),
                          'value': check.group('value')}
@@ -140,7 +140,8 @@ class Parsers(object):
             return False
 
     def pay_check(self, cmd):
-        check = re.match(self.pay_pattern, cmd)
+        # i'm setting str convertation for NoneType fix
+        check = re.match(self.pay_pattern, str(cmd))
         if check:
             blueprint = {'category': check.group('category'),
                          'value': check.group('value'),
