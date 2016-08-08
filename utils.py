@@ -1,0 +1,141 @@
+import re
+
+
+class Parsers(object):
+    '''list of patterns and functions to parse any allowed input'''
+
+    # parses new_account command to match
+    # 'new_account'
+    #        name= <string>
+    #        cash= <int>
+    #        debit= <int>
+    #        credit= <int>
+    #        savings= <int>
+    new_account_pattern = r"" \
+                          r"(\s)*(?P<cmd>new_account)" \
+                          r"(\s)+(name=)(?P<name>\w{1,10})" \
+                          r"(\s)+(cash=)(?P<cash>\d{1,10})" \
+                          r"(\s)+(debit=)(?P<debit>\d{1,10})" \
+                          r"(\s)+(credit=)(?P<credit>\d{1,10})" \
+                          r"(\s)+(savings=)(?P<savings>\d{1,10})" \
+                          r"(\s)*"
+
+    # parses open_account command to match
+    # 'open_account' name= <string>
+    open_account_pattern = r"" \
+                           r"(\s)*(?P<cmd>open_account)" \
+                           r"(\s)+(name=)(?P<name>\w{1,10})" \
+                           r"(\s)*"
+
+    # parses history command to match
+    # 'history' records= <int>
+    history_pattern = r"" \
+                      r"(\s)*(?P<cmd>history)" \
+                      r"(\s)+(records=)(?P<records>\d{1,5})"\
+                      r"(\s)*"
+
+    # parses payments command to match
+    # 'payments' records= <int>
+    payments_pattern = r"" \
+                       r"(\s)*(?P<cmd>payments)" \
+                       r"(\s)+(records=)(?P<records>\d{1,5})" \
+                       r"(\s)*"
+
+    # parses income command  to match
+    # 'income'
+    #    value= <string>
+    #    category= <string>
+    #    comment= <string>
+    income_pattern = r"" \
+                     r"(\s)*(?P<cmd>income)" \
+                     r"(\s)+(value=)(?P<value>\d{1,10})" \
+                     r"(\s)+(category=)(?P<category>\w{1,10})" \
+                     r"(\s)+(comment=)(?P<comment>\w{1,50})" \
+                     r"(\s)*"
+
+    # parses withdraw command to match
+    # 'withdraw'
+    #    category= <string>
+    #    value= <int>
+    withdraw_pattern = r"" \
+                       r"(\s)*(?P<cmd>withdraw)" \
+                       r"(\s)+(category=)(?P<category>\w{1,10})" \
+                       r"(\s)+(value=)(?P<value>\d{1,10})" \
+                       r"(\s)*"
+
+    # parses pay command to match
+    # 'pay'
+    #    category= <string>
+    #    value= <int>
+    #    comment= <string>
+    pay_pattern = r"" \
+                  r"(\s)*(?P<cmd>pay)" \
+                  r"(\s)+(category=)(?P<category>\w{1,10})" \
+                  r"(\s)+(value=)(?P<value>\d{1,10})" \
+                  r"(\s)+(comment=)(?P<value>\w{1,10})" \
+                  r"(\s)*"
+
+    def __init__(self):
+        pass
+
+    def new_account_check(self, cmd):
+        check = re.match(self.new_account_pattern, cmd)
+        if check:
+            blueprint = {'name': check.group('name'),
+                         'cash': check.group('cash'),
+                         'debit': check.group('debit'),
+                         'credit': check.group('credit'),
+                         'savings': check.group('savings')}
+            return blueprint
+        else:
+            return False
+
+    def open_account_check(self, cmd):
+        check = re.match(self.open_account_pattern, cmd)
+        if check:
+            return check.group('name')
+        else:
+            return False
+
+    def payments_check(self, cmd):
+        check = re.match(self.payments_pattern, cmd)
+        if check:
+            return check.group('records')
+        else:
+            return False
+
+    def history_check(self, cmd):
+        check = re.match(self.history_pattern, cmd)
+        if check:
+            return check.group('records')
+        else:
+            return False
+
+    def income_check(self, cmd):
+        check = re.match(self.income_pattern, cmd)
+        if check:
+            blueprint = {'value': check.group('value'),
+                         'category': check.group('category'),
+                         'comment': check.group('comment')}
+            return blueprint
+        else:
+            return False
+
+    def withdraw_check(self, cmd):
+        check = re.match(self.withdraw_pattern, cmd)
+        if check:
+            blueprint = {'category': check.group('category'),
+                         'value': check.group('value')}
+            return blueprint
+        else:
+            return False
+
+    def pay_check(self, cmd):
+        check = re.match(self.pay_pattern, cmd)
+        if check:
+            blueprint = {'category': check.group('category'),
+                         'value': check.group('value'),
+                         'comment': check.group('comment')}
+            return blueprint
+        else:
+            return False

@@ -84,52 +84,22 @@ class CmdMux(object):
 
     def new_account(self, params):
         self.logger.debug("Creating new clean account")
-        if params:
-            # shortest way for now
-            # to parse input despite of order
-            try:
-                for i in params:
-                    if i.startswith("name="):
-                        name = i.split('=')[1]
-                    elif i.startswith("cash="):
-                        cash = i.split('=')[1]
-                    elif i.startswith("debit="):
-                        debit = i.split('=')[1]
-                    elif i.startswith("credit="):
-                        credit = i.split('=')[1]
-                    elif i.startswith("savings="):
-                        savings = i.split('=')[1]
-                    else:
-                        self.logger.error("Not all parameters specified")
-                        return "FAILED"
-            except:
-                self.logger.error("Invalid input parameters")
-                return "FAILED"
-        else:
-            self.logger.debug("Empty parameters for account")
-            return "FAILED"
+        # shortest way for now
+        # to parse input despite of order
         # since all store(cash, debit, credit, savings) are
         # secure, I do not assgin values on instance creation
         # only by setters
 
-#        if not all(i is not None and isinstance(i, str) for i in
-#                   [name, cash, debit, credit, savings]):
-# cannot check cause
-# UnboundLocalError: local variable 'cash' referenced before assignment
-            self.logger.debug("Empty parameters for account")
-            return "FAILED"
+        # if not all(i is not None and isinstance(i, str) for i in
+        # [name, cash, debit, credit, savings]):
+        # cannot check cause
+        # UnboundLocalError: local variable 'cash' referenced before assignment
 
+        name = 'name'
         tmp_cash = Cash()
-        tmp_cash.value = int(cash)
-
         tmp_debit = Debit()
-        tmp_debit.value = int(debit)
-
         tmp_credit = Credit()
-        tmp_credit.value = int(credit)
-
         tmp_savings = Savings()
-        tmp_savings.value = int(savings)
 
         self.account = {'name': name,
                         'cash': tmp_cash,
@@ -245,6 +215,9 @@ class Bus(object):
         '''dispatcher of commands to CmdMux class'''
         params = cmd.split()
         action = params.pop(0)
+        # we do not need actually to call regexp here
+        # method of Mux will parse params and validate them
+        # and send appropriate message
         try:
             if action in static_commands:
                 result_message = getattr(cls, action)()
