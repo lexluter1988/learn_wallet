@@ -46,6 +46,10 @@ class Parsers(object):
     #    value= <string>
     #    category= <string>
     #    comment= <string>
+    # TODO:
+    # >>> pars.income_check('income value=1000 category=cash comment=fuck you')
+    # {'category': 'cash', 'comment': 'fuck', 'value': '1000'}
+
     income_pattern = r"" \
                      r"(\s)*(?P<cmd>income)" \
                      r"(\s)+(value=)(?P<value>\d{1,10})" \
@@ -68,11 +72,16 @@ class Parsers(object):
     #    category= <string>
     #    value= <int>
     #    comment= <string>
+
+    # we can have that if doublicat group names
+    # raise error, v # invalid expression
+    # sre_constants.error: redefinition of group name 'value' as group 11
+
     pay_pattern = r"" \
                   r"(\s)*(?P<cmd>pay)" \
                   r"(\s)+(category=)(?P<category>\w{1,10})" \
                   r"(\s)+(value=)(?P<value>\d{1,10})" \
-                  r"(\s)+(comment=)(?P<value>\w{1,10})" \
+                  r"(\s)+(comment=)(?P<comment>\w{1,10})" \
                   r"(\s)*"
 
     def __init__(self):
@@ -97,15 +106,15 @@ class Parsers(object):
         else:
             return False
 
-    def payments_check(self, cmd):
-        check = re.match(self.payments_pattern, cmd)
+    def history_check(self, cmd):
+        check = re.match(self.history_pattern, cmd)
         if check:
             return check.group('records')
         else:
             return False
 
-    def history_check(self, cmd):
-        check = re.match(self.history_pattern, cmd)
+    def payments_check(self, cmd):
+        check = re.match(self.payments_pattern, cmd)
         if check:
             return check.group('records')
         else:
