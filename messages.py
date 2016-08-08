@@ -1,5 +1,9 @@
 class Messages(object):
 
+    fuck_message = '''
+    Fuck you asshole
+    '''
+
     hello_message = '''
     Welcome to \'Fucking Wallet\'!
     '''
