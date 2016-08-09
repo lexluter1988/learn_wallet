@@ -78,7 +78,7 @@ class PayHistory(object):
 
 class PayRecord(object):
     '''Class ready to be stored in history of Payments Incomes'''
-    __slots__ = ['last_id', 'date', 'category', 'value', 'comment']
+    __slots__ = ['last_id', 'date', 'category', 'sign', 'value', 'comment']
 
     def __init__(self, category, value, comment):
         # that is why id for payments don't increase, i should set it
@@ -86,5 +86,6 @@ class PayRecord(object):
         self.last_id = 0
         self.date = datetime.now().strftime("%Y-%m-%d %H:%M")
         self.category = category
+        self.sign = '+'
         self.value = value
         self.comment = comment

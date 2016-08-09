@@ -232,6 +232,21 @@ class CmdMux(object):
 
     def payments(self, params):
         self.logger.debug("Getting you last payments")
+        num = self.prs.payments_check(params)
+        if num:
+            # return list of payments objects
+            records = self.account['payments'].get_payment(int(num))
+            # each record is PayRecord
+            out = ''
+            for record in records:
+                line = "|{}|{}|from:{}|sum:{}{}|comment:{}|\n".format(
+                           record.last_id,
+                           record.date, record.category,
+                           record.sign, record.value, record.comment,)
+                out += line
+            return msg.payments_message+'\n'+out
+        else:
+            return msg.payments_error
         return msg.payments_message
 
     # real operation methods
@@ -251,6 +266,7 @@ class CmdMux(object):
                 # incrementing ids
                 self.record_id += 1
                 pay.last_id += self.record_id
+                pay.sign = '-'
                 self.account['last_record_id'] = self.record_id
 
                 # when we pay, account always decreasing
@@ -277,17 +293,18 @@ class CmdMux(object):
             if blueprint['category'] not in category_list:
                 return msg.income_category_error
             else:
-                pay = PayRecord(blueprint['category'], blueprint['value'],
-                                blueprint['comment'])
+                income = PayRecord(blueprint['category'], blueprint['value'],
+                                   blueprint['comment'])
 
                 self.record_id += 1
-                pay.last_id += self.record_id
+                income.last_id += self.record_id
+                income.sign = '+'
                 self.account['last_record_id'] = self.record_id
 
                 # when we got money it's alway '+'
                 # and it's also up to Credit account to
                 # parse it as debt decreasing
-                self.account['payments'].put_payment(pay)
+                self.account['payments'].put_payment(income)
                 self.account[blueprint['category']].value += \
                     int(blueprint['value'])
 
