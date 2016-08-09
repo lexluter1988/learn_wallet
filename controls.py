@@ -84,6 +84,7 @@ class CmdMux(object):
     def __init__(self):
         self.prs = Parsers()
         self.account_opened = False
+        self.record_id = 0
         self.logger.debug("Created multiplexer for user's commands")
 
     # account initiation methods
@@ -131,6 +132,8 @@ class CmdMux(object):
                 'history': tmphistory,
             }
             self.__snapshot_history()
+            # in fact, this is first record of
+            # account's life
             self.__save()
             return msg.new_account_message
         else:
@@ -225,10 +228,22 @@ class CmdMux(object):
             else:
                 pay = PayRecord(blueprint['category'], blueprint['value'],
                                 blueprint['comment'])
-                # this is not working code pay.last_id += 1
+
+                # incrementing ids
+                self.record_id += 1
+                pay.last_id += self.record_id
+
+                # when we pay, account always decreasing
+                # it's up to Credit class to identify
+                # that '-' means increase debt
+                # or we can specify credit limit and
+                # show limit - value in view
                 self.account['payments'].put_payment(pay)
                 self.account[blueprint['category']].value -= \
                     int(blueprint['value'])
+
+                # we always making snapshow in history
+                # and alway save pickle file
                 self.__snapshot_history()
                 self.__save()
                 return msg.pay_message
@@ -244,10 +259,17 @@ class CmdMux(object):
             else:
                 pay = PayRecord(blueprint['category'], blueprint['value'],
                                 blueprint['comment'])
-                # this is not working code pay.last_id += 1
+
+                self.record_id += 1
+                pay.last_id += self.record_id
+
+                # when we got money it's alway '+'
+                # and it's also up to Credit account to
+                # parse it as debt decreasing
                 self.account['payments'].put_payment(pay)
                 self.account[blueprint['category']].value += \
                     int(blueprint['value'])
+
                 self.__snapshot_history()
                 self.__save()
                 return msg.income_message
@@ -263,11 +285,18 @@ class CmdMux(object):
             else:
                 pay = PayRecord(blueprint['category'], blueprint['value'],
                                 "withdraw")
-                # this is not working code pay.last_id += 1
+
+                self.record_id += 1
+                pay.last_id += self.record_id
+
+                # withdraw is alway taking money from any account
+                # into cash
+                # therefore, we check limit and check
                 self.account['payments'].put_payment(pay)
                 self.account[blueprint['category']].value -= \
                     int(blueprint['value'])
                 self.account['cash'].value += int(blueprint['value'])
+
                 self.__snapshot_history()
                 self.__save()
                 return msg.succes_withdraw_message
@@ -290,7 +319,11 @@ class CmdMux(object):
                                     self.account['credit'].value,
                                     self.account['savings'].value,)
         self.account['history'].put_record(last_record)
-        last_record.last_id += 1
+
+        # here we never just call snapshot_history_message
+        # without doing nothing
+        # alway payment, or withdraw or income
+        last_record.last_id = self.record_id
         return msg.snapshot_history_message
 
 
