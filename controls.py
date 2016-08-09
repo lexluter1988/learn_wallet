@@ -6,7 +6,8 @@ import cPickle as pickle
 from utils import Parsers
 from messages import Messages as msg
 from accounts import Cash, Debit, Credit, Savings
-from memory import BalanceHistory, BalanceRecord, PayHistory, PayRecord
+from memory import BalanceHistory, PayHistory
+from memory import BalanceRecord, PayRecord
 
 
 # tuple of commands we can call with no arguments
@@ -100,20 +101,29 @@ class CmdMux(object):
         blueprint = self.prs.new_account_check(params)
         if blueprint:
             self.account_opened = True
+            # creating temp objects
+            tmpname = blueprint['name']
 
-            tmpname, tmpcash, tmpdebit, tmpcredit, tmpsavings =\
-                blueprint['name'], Cash(), Debit(), Credit(), Savings()
+            tmpcash, tmpdebit, tmpcredit, tmpsavings = \
+                Cash(), Debit(), Credit(), Savings()
+
+            tmppayments, tmphistory = PayHistory(), BalanceHistory()
+
+            # assigning values
             tmpcash.value = int(blueprint['cash'])
             tmpdebit.value = int(blueprint['debit'])
             tmpcredit.value = int(blueprint['credit'])
             tmpsavings.value = int(blueprint['savings'])
 
+            # saving complete object (since new account, everything is empty)
             self.account = {
                 'name': tmpname,
                 'cash': tmpcash,
                 'debit': tmpdebit,
                 'credit': tmpcredit,
                 'savings': tmpsavings,
+                'payments': tmppayments,
+                'history': tmphistory,
             }
             self.__save()
             return msg.new_account_message
@@ -126,6 +136,9 @@ class CmdMux(object):
         if account_name:
             try:
                 with open(account_name+'.pickle', 'rb') as f:
+                    # in fact we load everything quite easy
+                    # into object so all methods can work with it
+                    # anyway we work only from cmd mux
                     self.account = pickle.load(f)
                     self.account_opened = True
                     return msg.open_account_message
