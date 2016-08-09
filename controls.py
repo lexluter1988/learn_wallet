@@ -30,6 +30,12 @@ category_list = ('cash',
                  'credit',
                  'savings', )
 
+
+# allowed accounts for withdraw
+withdraw_category_list = ('debit',
+                          'credit',
+                          'savings',)
+
 # tuple of commands which take exact one argument
 # example 1: new_account name=wallet cash=100 debit=0 credit=0 savings=0
 # example 2: open_account name=wallet
@@ -229,10 +235,40 @@ class CmdMux(object):
 
     def income(self, params):
         self.logger.debug("Great, we got money now")
-        return msg.income_message
+        blueprint = self.prs.income_check(params)
+        if blueprint:
+            if blueprint['category'] not in category_list:
+                return msg.income_category_error
+            else:
+                pay = PayRecord(blueprint['category'], blueprint['value'],
+                                blueprint['comment'])
+                pay.last_id += 1
+                self.account['payments'].put_payment(pay)
+                self.account[blueprint['category']].value += \
+                    int(blueprint['value'])
+                self.__save()
+                return msg.income_message
+        else:
+            return msg.basic_input_error
 
     def withdraw(self, params):
         self.logger.debug("Taking money from acoount to cash")
+        blueprint = self.prs.withdraw_check(params)
+        if blueprint:
+            if blueprint['category'] not in withdraw_category_list:
+                return msg.withdraw_category_error
+            else:
+                pay = PayRecord(blueprint['category'], blueprint['value'],
+                                "withdraw")
+                pay.last_id += 1
+                self.account['payments'].put_payment(pay)
+                self.account[blueprint['category']].value -= \
+                    int(blueprint['value'])
+                self.account['cash'].value += int(blueprint['value'])
+                self.__save()
+                return msg.succes_withdraw_message
+        else:
+            return msg.basic_input_error
         return msg.withdraw_message
 
     # sync method to update pickle file
@@ -241,6 +277,13 @@ class CmdMux(object):
         with open(self.account['name'] + ".pickle", 'wb') as f:
             pickle.dump(self.account, f, -1)
         return msg.save_message
+
+    # sync method place stats for balance history
+    def __snapshot_history(self):
+        self.logger.debug("Updating balance history")
+        with open(self.account['name'] + ".pickle", 'wb') as f:
+            pickle.dump(self.account, f, -1)
+        return msg.snapshot_history_message
 
 
 class Bus(object):
@@ -272,6 +315,6 @@ class Bus(object):
                 result_message = getattr(cls, action)()
             else:
                 result_message = getattr(cls, action)(cmd)
-                self.slow_type(result_message)
+            self.slow_type(result_message)
         except AttributeError:
             print("there is not such command: {0}..try again!".format(action))

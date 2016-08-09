@@ -52,8 +52,8 @@ class Parsers(object):
 
     income_pattern = r"" \
                      r"(\s)*(?P<cmd>income)" \
-                     r"(\s)+(value=)(?P<value>\d{1,10})" \
                      r"(\s)+(category=)(?P<category>\w{1,10})" \
+                     r"(\s)+(value=)(?P<value>\d{1,10})" \
                      r"(\s)+(comment=)(?P<comment>\w{1,50})" \
                      r"(\s)*"
 
@@ -123,8 +123,8 @@ class Parsers(object):
     def income_check(self, cmd):
         check = re.match(self.income_pattern, str(cmd))
         if check:
-            blueprint = {'value': check.group('value'),
-                         'category': check.group('category'),
+            blueprint = {'category': check.group('category'),
+                         'value': check.group('value'),
                          'comment': check.group('comment')}
             return blueprint
         else:

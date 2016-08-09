@@ -81,9 +81,13 @@ class Messages(object):
     pay_message = '''You payed for something'''
     income_message = '''We got money'''
     withdraw_message = '''Taking money from account to cash'''
+    succes_withdraw_message = '''Succesfully took money into cash'''
     save_message = '''Data saved'''
+    snapshot_history_message = '''Balance History updated'''
 
 # errors
     basic_input_error = '''You entered incorrect values'''
     pay_category_error = '''No such category for payments'''
     pay_no_money_error = '''You do not have so much money on that category'''
+    income_category_error = '''No such category for incomes'''
+    withdraw_category_error = '''You cannot take money from cash to cash'''
