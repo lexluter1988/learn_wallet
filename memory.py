@@ -1,4 +1,3 @@
-import cPickle as pickle
 from datetime import datetime
 
 
@@ -47,13 +46,22 @@ class PayHistory(object):
     '''This is imutable memory unit, containing all money records'''
 
     def __init__(self):
-        pass
+        # question here is:
+        # if we save to pickle and then load
+        # will the list be empty?
+        self.pay_records = []
 
-    def put_payment(self):
-        pass
+    # we generate payment object in cmd mux
+    # then we send it to payhistory object
+    # who loads everything
+    def put_payment(self, payment):
+        self.pay_records.append(payment)
+        return True
 
-    def get_payment(self):
-        pass
+    # getting record is also simple
+    # by sending id as how much we want to see
+    def get_payment(self, records_range):
+        return self.pay_records[:records_range]
 
 
 class PayRecord(object):
