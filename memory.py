@@ -81,6 +81,8 @@ class PayRecord(object):
     __slots__ = ['last_id', 'date', 'category', 'value', 'comment']
 
     def __init__(self, category, value, comment):
+        # that is why id for payments don't increase, i should set it
+        # by miself
         self.last_id = 0
         self.date = datetime.now().strftime("%Y-%m-%d %H:%M")
         self.category = category

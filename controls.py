@@ -130,6 +130,7 @@ class CmdMux(object):
                 'payments': tmppayments,
                 'history': tmphistory,
             }
+            self.__snapshot_history()
             self.__save()
             return msg.new_account_message
         else:
@@ -224,10 +225,11 @@ class CmdMux(object):
             else:
                 pay = PayRecord(blueprint['category'], blueprint['value'],
                                 blueprint['comment'])
-                pay.last_id += 1
+                # this is not working code pay.last_id += 1
                 self.account['payments'].put_payment(pay)
                 self.account[blueprint['category']].value -= \
                     int(blueprint['value'])
+                self.__snapshot_history()
                 self.__save()
                 return msg.pay_message
         else:
@@ -242,10 +244,11 @@ class CmdMux(object):
             else:
                 pay = PayRecord(blueprint['category'], blueprint['value'],
                                 blueprint['comment'])
-                pay.last_id += 1
+                # this is not working code pay.last_id += 1
                 self.account['payments'].put_payment(pay)
                 self.account[blueprint['category']].value += \
                     int(blueprint['value'])
+                self.__snapshot_history()
                 self.__save()
                 return msg.income_message
         else:
@@ -260,11 +263,12 @@ class CmdMux(object):
             else:
                 pay = PayRecord(blueprint['category'], blueprint['value'],
                                 "withdraw")
-                pay.last_id += 1
+                # this is not working code pay.last_id += 1
                 self.account['payments'].put_payment(pay)
                 self.account[blueprint['category']].value -= \
                     int(blueprint['value'])
                 self.account['cash'].value += int(blueprint['value'])
+                self.__snapshot_history()
                 self.__save()
                 return msg.succes_withdraw_message
         else:
@@ -281,8 +285,12 @@ class CmdMux(object):
     # sync method place stats for balance history
     def __snapshot_history(self):
         self.logger.debug("Updating balance history")
-        with open(self.account['name'] + ".pickle", 'wb') as f:
-            pickle.dump(self.account, f, -1)
+        last_record = BalanceRecord(self.account['cash'].value,
+                                    self.account['debit'].value,
+                                    self.account['credit'].value,
+                                    self.account['savings'].value,)
+        self.account['history'].put_record(last_record)
+        last_record.last_id += 1
         return msg.snapshot_history_message
 
 
