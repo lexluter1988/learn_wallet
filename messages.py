@@ -91,3 +91,4 @@ class Messages(object):
     pay_no_money_error = '''You do not have so much money on that category'''
     income_category_error = '''No such category for incomes'''
     withdraw_category_error = '''You cannot take money from cash to cash'''
+    history_error = '''Invalid history request'''

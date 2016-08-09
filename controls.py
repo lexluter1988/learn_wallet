@@ -93,6 +93,7 @@ class CmdMux(object):
         return msg.no_account_message
 
     def new_account(self, params):
+        last_record_id = 0
         self.logger.debug("Creating new clean account")
         # shortest way for now
         # to parse input despite of order
@@ -130,6 +131,7 @@ class CmdMux(object):
                 'savings': tmpsavings,
                 'payments': tmppayments,
                 'history': tmphistory,
+                'last_record_id': last_record_id,
             }
             self.__snapshot_history()
             # in fact, this is first record of
@@ -149,6 +151,8 @@ class CmdMux(object):
                     # into object so all methods can work with it
                     # anyway we work only from cmd mux
                     self.account = pickle.load(f)
+                    # last_record_id is stored in account itself
+                    self.record_id = self.account['last_record_id']
                     self.account_opened = True
                     return msg.open_account_message
             except TypeError:
@@ -209,7 +213,22 @@ class CmdMux(object):
     # history methods, for last payments and balance history
     def history(self, params):
         self.logger.debug("Getting your last balance history")
-        return msg.history_message
+        num = self.prs.history_check(params)
+        if num:
+            # return list of balance record objects
+            records = self.account['history'].get_record(int(num))
+            # each record is BalanceRecord
+            out = ''
+            for record in records:
+                line = "|{}|{}|cash:{}|debit:{}|credit:{}|safe:{}|\n".format(
+                           record.last_id,
+                           record.date, record.cash,
+                           record.debit, record.credit,
+                           record.savings,)
+                out += line
+            return msg.history_message+'\n'+out
+        else:
+            return msg.history_error
 
     def payments(self, params):
         self.logger.debug("Getting you last payments")
@@ -232,6 +251,7 @@ class CmdMux(object):
                 # incrementing ids
                 self.record_id += 1
                 pay.last_id += self.record_id
+                self.account['last_record_id'] = self.record_id
 
                 # when we pay, account always decreasing
                 # it's up to Credit class to identify
@@ -262,6 +282,7 @@ class CmdMux(object):
 
                 self.record_id += 1
                 pay.last_id += self.record_id
+                self.account['last_record_id'] = self.record_id
 
                 # when we got money it's alway '+'
                 # and it's also up to Credit account to
@@ -288,6 +309,7 @@ class CmdMux(object):
 
                 self.record_id += 1
                 pay.last_id += self.record_id
+                self.account['last_record_id'] = self.record_id
 
                 # withdraw is alway taking money from any account
                 # into cash
