@@ -39,7 +39,7 @@ class Account(object):
 
     @value.setter
     def value(self, value):
-        self._value += value
+        self._value = value
         self.synchronize()
         return True
 

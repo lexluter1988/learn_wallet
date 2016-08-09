@@ -9,23 +9,26 @@ from accounts import Cash, Debit, Credit, Savings
 from memory import BalanceHistory, PayHistory
 from memory import BalanceRecord, PayRecord
 
-
 # tuple of commands we can call with no arguments
 # commands like getters of values
 # no arguments needed here
-static_commands = (
-    'hello',
-    'help',
-    'tutorial',
-    'save',
-    'quit',
-    'cash',
-    'balance',
-    'debit',
-    'credit',
-    'no_account',
-    'savings'
-    )
+static_commands = ('hello',
+                   'help',
+                   'tutorial',
+                   'save',
+                   'quit',
+                   'cash',
+                   'balance',
+                   'debit',
+                   'credit',
+                   'no_account',
+                   'savings', )
+
+# allowed category tuple
+category_list = ('cash',
+                 'debit',
+                 'credit',
+                 'savings', )
 
 # tuple of commands which take exact one argument
 # example 1: new_account name=wallet cash=100 debit=0 credit=0 savings=0
@@ -33,18 +36,14 @@ static_commands = (
 # example 3: pay category=cash value=1000 comment=bitches
 # example 4: withdraw category=credit value=100
 # example 5: history records=100
-operation_list = (
-    'new_account',
-    'open_account',
-    'pay',
-    'withdraw',
-    'income',
-    )
+operation_list = ('new_account',
+                  'open_account',
+                  'pay',
+                  'withdraw',
+                  'income', )
 
-history_list = (
-    'history',
-    'payments',
-    )
+history_list = ('history',
+                'payments', )
 
 
 class CmdLog(type):
@@ -60,7 +59,7 @@ class CmdLog(type):
         # we write in format like:
         # '1970-01-10, 15:49:12,913 [INFO] [CheckMeta] - Hello World!'
         out_handler.setFormatter(logging.Formatter(
-                '%(asctime)s [%(levelname)s] [%(name)s] - %(message)s'))
+            '%(asctime)s [%(levelname)s] [%(name)s] - %(message)s'))
         out_handler.setLevel(logging.DEBUG)
 
         # adjust our metaclass to contain logger from beginning
@@ -135,7 +134,7 @@ class CmdMux(object):
         account_name = self.prs.open_account_check(params)
         if account_name:
             try:
-                with open(account_name+'.pickle', 'rb') as f:
+                with open(account_name + '.pickle', 'rb') as f:
                     # in fact we load everything quite easy
                     # into object so all methods can work with it
                     # anyway we work only from cmd mux
@@ -209,7 +208,24 @@ class CmdMux(object):
     # real operation methods
     def pay(self, params):
         self.logger.debug("Paying for something")
-        return msg.pay_message
+        blueprint = self.prs.pay_check(params)
+        if blueprint:
+            money_i_have = self.account[blueprint['category']].value
+            if blueprint['category'] not in category_list:
+                return msg.pay_category_error
+            elif (int(blueprint['value']) > int(money_i_have)):
+                return msg.pay_no_money_error
+            else:
+                pay = PayRecord(blueprint['category'], blueprint['value'],
+                                blueprint['comment'])
+                pay.last_id += 1
+                self.account['payments'].put_payment(pay)
+                self.account[blueprint['category']].value -= \
+                    int(blueprint['value'])
+                self.__save()
+                return msg.pay_message
+        else:
+            return msg.basic_input_error
 
     def income(self, params):
         self.logger.debug("Great, we got money now")
@@ -222,8 +238,8 @@ class CmdMux(object):
     # sync method to update pickle file
     def __save(self):
         self.logger.debug("Saving all to pickle file")
-        with open(self.account['name']+".pickle", 'wb', -1) as f:
-            pickle.dump(self.account, f)
+        with open(self.account['name'] + ".pickle", 'wb') as f:
+            pickle.dump(self.account, f, -1)
         return msg.save_message
 
 
@@ -256,6 +272,6 @@ class Bus(object):
                 result_message = getattr(cls, action)()
             else:
                 result_message = getattr(cls, action)(cmd)
-            self.slow_type(result_message)
+                self.slow_type(result_message)
         except AttributeError:
             print("there is not such command: {0}..try again!".format(action))

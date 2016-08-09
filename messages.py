@@ -85,3 +85,5 @@ class Messages(object):
 
 # errors
     basic_input_error = '''You entered incorrect values'''
+    pay_category_error = '''No such category for payments'''
+    pay_no_money_error = '''You do not have so much money on that category'''

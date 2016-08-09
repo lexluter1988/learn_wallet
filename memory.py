@@ -35,10 +35,10 @@ class BalanceHistory(object):
 
 class BalanceRecord(object):
     '''This is just record ready to be stored in history'''
-    __slots__ = ['id', 'date', 'cash', 'debit', 'credit', 'savings']
+    __slots__ = ['last_id', 'date', 'cash', 'debit', 'credit', 'savings']
 
     def __init__(self, cash, debit, credit, savings):
-        self.id = 0
+        self.last_id = 0
         self.date = datetime.now().strftime("%Y-%m-%d %H:%M")
         self.cash = cash
         self.debit = debit
@@ -71,14 +71,17 @@ class PayHistory(object):
     # by sending id as how much we want to see
     def get_payment(self, payments_range):
         return self.pay_records[:payments_range]
+        # note: this is always list
+        # even if 1 object
+        # TODO: need to think about out of range error!
 
 
 class PayRecord(object):
     '''Class ready to be stored in history of Payments Incomes'''
-    __slots__ = ['id', 'date', 'category', 'value', 'comment']
+    __slots__ = ['last_id', 'date', 'category', 'value', 'comment']
 
     def __init__(self, category, value, comment):
-        self.id = 0
+        self.last_id = 0
         self.date = datetime.now().strftime("%Y-%m-%d %H:%M")
         self.category = category
         self.value = value
