@@ -1,6 +1,5 @@
 class Messages(object):
 
-
     hello_message = '''
     Welcome to \'Fucking Wallet\'!
     '''
@@ -72,11 +71,11 @@ class Messages(object):
 
     new_account_message = '''Account for you created'''
     open_account_message = '''Your account loaded'''
-    balance_message = '''Your balance'''
-    cash_message = '''Your cash'''
-    debit_message = '''Your debit'''
-    credit_message = '''Your credit'''
-    savings_message = '''Your savings'''
+    balance_message = '''Balance'''
+    cash_message = '''Cash'''
+    debit_message = '''Ddebit'''
+    credit_message = '''Credit'''
+    savings_message = '''Savings'''
     history_message = '''Here is last balance histoty'''
     payments_message = '''Last payments'''
     pay_message = '''You payed for something'''
