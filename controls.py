@@ -36,21 +36,6 @@ withdraw_category_list = ('debit',
                           'credit',
                           'savings',)
 
-# tuple of commands which take exact one argument
-# example 1: new_account name=wallet cash=100 debit=0 credit=0 savings=0
-# example 2: open_account name=wallet
-# example 3: pay category=cash value=1000 comment=bitches
-# example 4: withdraw category=credit value=100
-# example 5: history records=100
-operation_list = ('new_account',
-                  'open_account',
-                  'pay',
-                  'withdraw',
-                  'income', )
-
-history_list = ('history',
-                'payments', )
-
 
 class CmdLog(type):
     '''Commands logger metaclass, used only for commands'''
@@ -82,21 +67,44 @@ class CmdMux(object):
     __metaclass__ = CmdLog
 
     def __init__(self):
+        # class like singleton
+        # we have all parsers here
+        # all records blueprints
+        # last record id as well here
         self.prs = Parsers()
         self.account_opened = False
         self.record_id = 0
         self.logger.debug("Created multiplexer for user's commands")
 
-    # account initiation methods
+    # info methods that do not need any value or calculation
+    def hello(self):
+        self.logger.debug("Wallet program initiated")
+        return msg.hello_message
+
+    def quit(self):
+        self.logger.debug("Exiting from wallet")
+        return msg.quit_message
+
+    def help(self):
+        self.logger.debug("Asking for help")
+        return msg.help_message
+
+    def tutorial(self):
+        self.logger.debug("Asking for tutorial")
+        return msg.tutorial_message
+
     def no_account(self):
-        self.logger.debug("no account opened")
+        self.logger.error("No accounts opened")
         return msg.no_account_message
 
+    # main work with accounts creation/initialization
     def new_account(self, params):
+        '''method that parses already have dict object for new account
+        it should create all memory units, records stores, save them
+        and write first history records for new account'''
         last_record_id = 0
         self.logger.debug("Creating new clean account")
         # shortest way for now
-        # to parse input despite of order
         # since all store(cash, debit, credit, savings) are
         # secure, I do not assgin values on instance creation
         # only by setters
@@ -111,6 +119,9 @@ class CmdMux(object):
             # creating temp objects
             tmpname = blueprint['name']
 
+            # true for credit means it will be
+            # initiate like if we already own money
+            # of course you can set value 0
             tmpcash, tmpdebit, tmpcredit, tmpsavings = \
                 Cash(), Debit(), Credit(True), Savings()
 
@@ -122,7 +133,7 @@ class CmdMux(object):
             tmpcredit.value = int(blueprint['credit'])
             tmpsavings.value = int(blueprint['savings'])
 
-            # saving complete object (since new account, everything is empty)
+            # saving complete object (new account, everything is empty)
             self.account = {
                 'name': tmpname,
                 'cash': tmpcash,
@@ -139,17 +150,20 @@ class CmdMux(object):
             self.__save()
             return msg.new_account_message
         else:
-            return msg.basic_input_error
+            # if we here, blueprint is not correct
+            # we send new_account_error
+            return msg.new_account_error
 
     def open_account(self, params):
+        '''method to open pickle file, and load just one
+        big dict object with all our Cash(), BalanceRecords(), etc'''
         self.logger.debug("Opening your account")
         account_name = self.prs.open_account_check(params)
         if account_name:
             try:
                 with open(account_name + '.pickle', 'rb') as f:
                     # in fact we load everything quite easy
-                    # into object so all methods can work with it
-                    # anyway we work only from cmd mux
+                    # into dict object so all methods can work with it
                     self.account = pickle.load(f)
                     # last_record_id is stored in account itself
                     self.record_id = self.account['last_record_id']
@@ -157,30 +171,13 @@ class CmdMux(object):
                     return msg.open_account_message
             except TypeError:
                 self.logger.error("Failure during opening")
-                return msg.basic_input_error
+                return msg.open_account_error
             except IOError:
                 self.logger.error("Account does not exist")
-                return msg.basic_input_error
+                return msg.no_exists_error
         else:
             self.account_opened = False
-            return msg.basic_input_error
-
-    # info methods that do not need any value or calculation
-    def hello(self):
-        self.logger.debug("Entering into programm")
-        return msg.hello_message
-
-    def quit(self):
-        self.logger.debug("Exiting from programm")
-        return msg.quit_message
-
-    def help(self):
-        self.logger.debug("Asking for help")
-        return msg.help_message
-
-    def tutorial(self):
-        self.logger.debug("Asking for tutorial")
-        return msg.tutorial_message
+            return msg.open_account_name_error
 
     # status methdos, that needs objects of accounts and record
     def balance(self):
@@ -251,7 +248,7 @@ class CmdMux(object):
 
     # real operation methods
     def pay(self, params):
-        self.logger.debug("Paying for something")
+        self.logger.debug("Spending money")
         blueprint = self.prs.pay_check(params)
         if blueprint:
             money_i_have = self.account[blueprint['category']].value
@@ -285,7 +282,7 @@ class CmdMux(object):
                 self.__save()
                 return msg.pay_message
         else:
-            return msg.basic_input_error
+            return msg.pay_error
 
     def income(self, params):
         self.logger.debug("Great, we got money now")
@@ -313,7 +310,7 @@ class CmdMux(object):
                 self.__save()
                 return msg.income_message
         else:
-            return msg.basic_input_error
+            return msg.income_error
 
     def withdraw(self, params):
         self.logger.debug("Taking money from acoount to cash")
@@ -341,7 +338,7 @@ class CmdMux(object):
                 self.__save()
                 return msg.succes_withdraw_message
         else:
-            return msg.basic_input_error
+            return msg.withdraw_error
         return msg.withdraw_message
 
     # sync method to update pickle file

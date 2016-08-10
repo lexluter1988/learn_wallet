@@ -10,86 +10,69 @@ class Messages(object):
 
     help_message = '''
     [basics]
-        'open_account name=<account name>' - open your account
-        'new_account name=<account name>
-                cash=<value>
-                debit=<value>
-                credit=<value>
-                savings=<value>' - create new account with all settings
-
-        'help' - to get cmd list
-        'tutorial' - to get full description
-        'quit' - just quit program
+    'help', 'tutorial, 'open_account', 'new_account', 'quit'
 
     [operations]
-        'income
-            category=<cash|debit|credit|savings>
-            value=<sum>' - put money
-        'pay
-            category=<cash|debit|credit|savings>
-            value=<sum>
-            comment=<comment>' - spend money
-        'withdraw
-            category=<debit|credit|savings>
-            value=<amount>' - from any account into cash
+    'income', 'pay', 'withdraw'
 
     [stats]
-        'balance' - show current stats of your wallet
-        'cash'- how much cash you have
-        'debit' - how much on salary account
-        'credit' - how much you own
-        'savings' - how much you save for your future
+    'balance', 'cash', 'debit', 'credit', 'savings'
 
     [history]
-        'history records=<last records>' - show last balance changes
-        'payments records<last records>' - show last payments
+    'history', 'payments'
     '''
 
     tutorial_message = '''
     Welcome to the tutorial!
 
-    Start using your wallet, create new one (new_account)
-    Or continue using your old file (open_account)
-    List your current stats for all stores (balance)
-    Or list specific store (cash|debit|credit|savings)
-    See your history (history) for last days
+    Start by creating new wallet. (new_account)
+    Specify all cash,debit,credit,savings values.
 
-    See how you spend your money (payments)
-    Pay for something (pay) or withdraw your cash
-    When payday come - put (income) something in any of your account
+    Or continue using your old wallet. (open_account)
+    List your current stats for all stores. (balance)
+
+    Or list specific store. (cash|debit|credit|savings)
+    See your history (history) for last days, how balance changed.
+
+    See how you spend your money (payments) for last days.
+    Pay for something (pay) or withdraw from account into cash.
+    When payday come - put (income) something in any of your account.
     Good luck!
     '''
 
     no_account_message = '''
-    You haven't opened any account
-
-    Please initiate new one(new_account)
-    Or open existing (open_account)
-
-    You can also see 'help' page and 'tutorial'
+    No accounts opened. Use 'new_account' or 'open_account'
+    Also see 'help' page and 'tutorial' if you questions.
     '''
 
-    new_account_message = '''Account for you created'''
-    open_account_message = '''Your account loaded'''
-    balance_message = '''Balance'''
-    cash_message = '''Cash'''
-    debit_message = '''Ddebit'''
-    credit_message = '''Credit'''
-    savings_message = '''Savings'''
-    history_message = '''Here is last balance histoty'''
-    payments_message = '''Last payments'''
-    pay_message = '''You payed for something'''
-    income_message = '''We got money'''
-    withdraw_message = '''Taking money from account to cash'''
-    succes_withdraw_message = '''Succesfully took money into cash'''
-    save_message = '''Data saved'''
-    snapshot_history_message = '''Balance History updated'''
+    new_account_message = '''account created'''
+    open_account_message = '''account loaded'''
+    balance_message = '''balance'''
+    cash_message = '''cash'''
+    debit_message = '''debit'''
+    credit_message = '''credit'''
+    savings_message = '''savings'''
+    history_message = '''last balance changes history'''
+    payments_message = '''your last payments'''
+    pay_message = '''payment recieved'''
+    income_message = '''great, we got money'''
+    withdraw_message = '''taking money from accounts to cash'''
+    succes_withdraw_message = '''succesfull withdraw'''
+    save_message = '''data saved'''
+    snapshot_history_message = '''balance history updated'''
 
 # errors
-    basic_input_error = '''You entered incorrect values'''
-    pay_category_error = '''No such category for payments'''
-    pay_no_money_error = '''You do not have so much money on that category'''
-    income_category_error = '''No such category for incomes'''
-    withdraw_category_error = '''You cannot take money from cash to cash'''
-    history_error = '''Invalid history request'''
-    payments_error = '''Invalid payments request'''
+    basic_input_error = '''you entered incorrect values'''
+    new_account_error = '''incorrect values for new account'''
+    open_account_error = '''unable to open account'''
+    open_account_name_error = '''unable to open, incorrect arguments'''
+    no_exists_error = '''account with that name does not exist'''
+    pay_category_error = '''wrong category, use [cash,debit,credit,savings]'''
+    pay_error = '''unable to proceed payment, invalid arguments'''
+    pay_no_money_error = '''you do not have so much money in this account'''
+    income_error = '''unable to put income, invalid arguments'''
+    income_category_error = '''no such category for incomes'''
+    withdraw_category_error = '''you cannot take money from cash to cash'''
+    withdraw_error = '''unable to proceed withdraw, invalid arguments'''
+    history_error = '''invalid history request, specify <records=>'''
+    payments_error = '''invalid payments request, specify <records=>'''

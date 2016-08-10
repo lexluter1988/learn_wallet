@@ -4,13 +4,13 @@ from controls import Bus
 # instantiate you Commands Multiplexer and Data/Commands bus
 # it will take all commands and return results
 # from appropriate methods
+# primary entry point for program
 mux = CmdMux()
 bus = Bus()
 
 # global quit variable
 quit_recieved = False
 
-# entry point for program
 # infinite loop till KeyboardInterrupt
 # or 'quit' command
 bus.send_data(mux, 'hello')
@@ -20,7 +20,7 @@ while not quit_recieved:
         command = raw_input("prompt> ")
         if not command:
             continue
-        # we can affort send user messages for tutor and help
+        # we can affort to send messages for tutor and help
         # even if he have not account yet
         elif (lambda x: isinstance(x, str)
               and (x.startswith("help")
@@ -28,18 +28,17 @@ while not quit_recieved:
                    or x.startswith("new_account")
                    or x.startswith("open_account")))(command):
             bus.send_data(mux, command)
-        # also we allow to quit from program
-        # obviously
+        # also we allow to quit from program, obviously
         elif (lambda x: isinstance(x, str) and x.startswith("quit"))(command):
             break
-        # and then we checkout if user have or not have any account
+        # and then we check if user have or not any account
         elif not mux.account_opened:
             bus.send_data(mux, 'no_account')
         # simply exit with no call to multiplexer
         else:
             # we just send string to multiplexer
-            # ther we will parse and take arguments
-            # main file is just like console for user
+            # there we will parse and take arguments
+            # main.py is just like console for user
             # all internal calculations are hided
             bus.send_data(mux, command)
     except KeyboardInterrupt:

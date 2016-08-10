@@ -88,6 +88,7 @@ class Parsers(object):
         pass
 
     def new_account_check(self, cmd):
+        '''return dict object for new account'''
         check = re.match(self.new_account_pattern, str(cmd))
         if check:
             blueprint = {'name': check.group('name'),
@@ -100,6 +101,7 @@ class Parsers(object):
             return False
 
     def open_account_check(self, cmd):
+        '''return string name for accout to be opened'''
         check = re.match(self.open_account_pattern, str(cmd))
         if check:
             return check.group('name')
@@ -107,6 +109,7 @@ class Parsers(object):
             return False
 
     def history_check(self, cmd):
+        '''return int num of records to get from history of balance'''
         check = re.match(self.history_pattern, str(cmd))
         if check:
             return check.group('records')
@@ -114,6 +117,7 @@ class Parsers(object):
             return False
 
     def payments_check(self, cmd):
+        '''return int num of payments to get from payments history'''
         check = re.match(self.payments_pattern, str(cmd))
         if check:
             return check.group('records')
@@ -121,6 +125,7 @@ class Parsers(object):
             return False
 
     def income_check(self, cmd):
+        '''return dict object for new payment as income'''
         check = re.match(self.income_pattern, str(cmd))
         if check:
             blueprint = {'category': check.group('category'),
@@ -131,6 +136,7 @@ class Parsers(object):
             return False
 
     def withdraw_check(self, cmd):
+        '''return dict object for new payment as withdraw'''
         check = re.match(self.withdraw_pattern, str(cmd))
         if check:
             blueprint = {'category': check.group('category'),
@@ -140,6 +146,7 @@ class Parsers(object):
             return False
 
     def pay_check(self, cmd):
+        '''return dict object for new payment as pay for some goods'''
         # i'm setting str convertation for NoneType fix
         check = re.match(self.pay_pattern, str(cmd))
         if check:
