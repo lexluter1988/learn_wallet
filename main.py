@@ -1,5 +1,5 @@
-from controls import CmdMux
-from controls import Bus
+from src.controls import CmdMux
+from src.controls import Bus
 
 # instantiate you Commands Multiplexer and Data/Commands bus
 # it will take all commands and return results
