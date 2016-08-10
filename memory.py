@@ -41,7 +41,6 @@ class BalanceRecord(object):
     '''This is record ready to be stored in history'''
     __slots__ = ['last_id', 'date', 'cash', 'debit', 'credit', 'savings']
 
-
     def __init__(self, cash, debit, credit, savings):
         self.last_id = 0
         # last date generated automatically
