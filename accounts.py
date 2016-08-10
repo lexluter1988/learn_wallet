@@ -59,10 +59,41 @@ class Cash(Account):
 class Credit(Account):
     '''Credit account where credit card balance stored'''
 
-    def __init__(self):
+    # for credit it is important to know
+    # if this is first init of credit
+    # or if we update it
+    def __init__(self, clean=False):
         super(Credit, self).__init__()
         self.description = 'Credit'
+        self.clean = clean
+        # rate is for future
+        # to calculate %
         self.rate = 0
+
+    @property
+    def value(self):
+        return self._value
+
+    # rewriten property cause credit is always negative
+    @value.setter
+    def value(self, value):
+        # so, we always initiate credit as negative value
+        # since regexp for new_account cannot take
+        # negative input for credit -> we always have correct
+        # value
+        if self.clean:
+            self._value -= value
+            # and we should of course switch account
+            # to not clean after that
+            self.clean = False
+        else:
+            # as soon as credit already initiated
+            # we work with it as usual
+            # if you take money - we subtract
+            # if you put money - we add
+            self._value = value
+        self.synchronize()
+        return True
 
 
 class Debit(Account):
@@ -79,5 +110,8 @@ class Savings(Account):
     def __init__(self):
         super(Savings, self).__init__()
         self.description = 'Savings'
+        # for future features
+        # http://openexchangerates.readthedocs.io/en/latest/content/configure.html
+        # to get up-to-date $ rate, in case safe in dollars
         self.currency = 'RUB'
         self.exchange_rate = 1

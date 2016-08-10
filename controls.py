@@ -112,7 +112,7 @@ class CmdMux(object):
             tmpname = blueprint['name']
 
             tmpcash, tmpdebit, tmpcredit, tmpsavings = \
-                Cash(), Debit(), Credit(), Savings()
+                Cash(), Debit(), Credit(True), Savings()
 
             tmppayments, tmphistory = PayHistory(), BalanceHistory()
 
@@ -257,7 +257,8 @@ class CmdMux(object):
             money_i_have = self.account[blueprint['category']].value
             if blueprint['category'] not in category_list:
                 return msg.pay_category_error
-            elif (int(blueprint['value']) > int(money_i_have)):
+            elif ((blueprint['category'] != 'credit') and
+                  int(blueprint['value']) > int(money_i_have)):
                 return msg.pay_no_money_error
             else:
                 pay = PayRecord(blueprint['category'], blueprint['value'],
@@ -274,9 +275,9 @@ class CmdMux(object):
                 # that '-' means increase debt
                 # or we can specify credit limit and
                 # show limit - value in view
-                self.account['payments'].put_payment(pay)
                 self.account[blueprint['category']].value -= \
                     int(blueprint['value'])
+                self.account['payments'].put_payment(pay)
 
                 # we always making snapshow in history
                 # and alway save pickle file
