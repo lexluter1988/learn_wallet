@@ -26,6 +26,7 @@ while not quit_recieved:
               and (x.startswith("help")
                    or x.startswith("tutorial")
                    or x.startswith("new_account")
+                   or x.startswith("debug")
                    or x.startswith("open_account")))(command):
             bus.send_data(mux, command)
         # also we allow to quit from program, obviously

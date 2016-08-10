@@ -9,6 +9,9 @@ class Messages(object):
     '''
 
     help_message = '''
+    [logger]
+    debug on, debug off
+
     [basics]
     'help', 'tutorial, 'open_account', 'new_account', 'quit'
 
@@ -60,6 +63,8 @@ class Messages(object):
     succes_withdraw_message = '''succesfull withdraw'''
     save_message = '''data saved'''
     snapshot_history_message = '''balance history updated'''
+    logger_off = '''debug log turned off'''
+    logger_on = '''debug log turned on'''
 
 # errors
     basic_input_error = '''you entered incorrect values'''
@@ -76,3 +81,6 @@ class Messages(object):
     withdraw_error = '''unable to proceed withdraw, invalid arguments'''
     history_error = '''invalid history request, specify <records=>'''
     payments_error = '''invalid payments request, specify <records=>'''
+    logger_error_on = '''debug log already turned on'''
+    logger_error_off = '''debug log already turned off'''
+    logger_error = '''invalid parameters for logger'''

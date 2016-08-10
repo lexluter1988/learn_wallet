@@ -4,6 +4,14 @@ import re
 class Parsers(object):
     '''list of patterns and functions to parse any allowed input'''
 
+    # logger switch pattern
+    # we call it like
+    # debug on
+    # debug off
+    logger_check_pattern = r"" \
+                           r"(\s)*(debug)(\s){1,1}(?P<switch>\w{1,3})" \
+                           r"(\s)*"
+
     # parses new_account command to match
     # 'new_account'
     #        name= <string>
@@ -154,5 +162,13 @@ class Parsers(object):
                          'value': check.group('value'),
                          'comment': check.group('comment')}
             return blueprint
+        else:
+            return False
+
+    def debug_check(self, cmd):
+        '''return string of turning on or off the stdout logger'''
+        check = re.match(self.logger_check_pattern, str(cmd))
+        if check:
+            return check.group('switch')
         else:
             return False

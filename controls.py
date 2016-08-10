@@ -22,7 +22,7 @@ static_commands = ('hello',
                    'debit',
                    'credit',
                    'no_account',
-                   'savings', )
+                   'savings',)
 
 # allowed category tuple
 category_list = ('cash',
@@ -43,19 +43,26 @@ class CmdLog(type):
     def __new__(cls, name, bases, namespace, **kwargs):
         # basic metaclass override of new method
         result = type.__new__(cls, name, bases, dict(namespace))
-        # changing logger to strdout
-        out_handler = logging.StreamHandler(sys.stdout)
 
+        # logger to file
+        result.file_handler = logging.FileHandler('wallet.log')
+        result.file_handler.setFormatter(logging.Formatter(
+            '%(asctime)s [%(levelname)s] [%(name)s] - %(message)s'))
+        result.file_handler.setLevel(logging.DEBUG)
+
+        # logger to stdout
+        result.out_handler = logging.StreamHandler(sys.stdout)
         # format logger to write in stdout
         # we write in format like:
         # '1970-01-10, 15:49:12,913 [INFO] [CheckMeta] - Hello World!'
-        out_handler.setFormatter(logging.Formatter(
+        result.out_handler.setFormatter(logging.Formatter(
             '%(asctime)s [%(levelname)s] [%(name)s] - %(message)s'))
-        out_handler.setLevel(logging.DEBUG)
+        result.out_handler.setLevel(logging.DEBUG)
 
         # adjust our metaclass to contain logger from beginning
         result.logger = logging.getLogger(name)
-        result.logger.addHandler(out_handler)
+        result.logger.addHandler(result.out_handler)
+        result.logger.addHandler(result.file_handler)
         result.logger.setLevel(logging.DEBUG)
 
         return result
@@ -71,10 +78,30 @@ class CmdMux(object):
         # we have all parsers here
         # all records blueprints
         # last record id as well here
+        self.console_logger = True
         self.prs = Parsers()
         self.account_opened = False
         self.record_id = 0
         self.logger.debug("Created multiplexer for user's commands")
+
+    # switcher for loggers
+    def debug(self, params):
+        debug_toggle = self.prs.debug_check(params)
+        if debug_toggle:
+            if self.console_logger and debug_toggle == 'on':
+                return msg.logger_error_on
+            elif self.console_logger and debug_toggle == 'off':
+                self.console_logger = False
+                self.logger.removeHandler(self.out_handler)
+                return msg.logger_off
+            elif not self.console_logger and debug_toggle == 'off':
+                return msg.logger_error_off
+            else:
+                self.console_logger = True
+                self.logger.addHandler(self.out_handler)
+                return msg.logger_on
+        else:
+            return msg.logger_error
 
     # info methods that do not need any value or calculation
     def hello(self):
