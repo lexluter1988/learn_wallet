@@ -1,0 +1,2 @@
+class NotMoneyError(ValueError):
+    pass

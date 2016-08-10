@@ -1,0 +1,10 @@
+lexluter1988@lexluter1988-SVF1532P1RB:~/python-emacs$ python -m unittest -v project_fucking_wallet.tests.test_account 
+test_creation (project_fucking_wallet.tests.test_account.Check)
+test object creation ... ok
+test_value (project_fucking_wallet.tests.test_account.Check)
+test that we can set value by private var ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.000s
+
+OK

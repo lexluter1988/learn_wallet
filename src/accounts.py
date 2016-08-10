@@ -1,4 +1,5 @@
 from datetime import datetime
+from exceptions import NotMoneyError
 
 
 class Account(object):
@@ -46,6 +47,8 @@ class Account(object):
     @value.setter
     def value(self, value):
         '''primary setter for weak property'''
+        if not isinstance(value, int):
+            raise NotMoneyError
         self._value = value
         self.synchronize()
         return True
@@ -87,6 +90,8 @@ class Credit(Account):
     # rewriten property cause credit is always negative
     @value.setter
     def value(self, value):
+        if not isinstance(value, int):
+            raise NotMoneyError
         # so, we always initiate credit as negative value
         # cause regexp for new_account will not take
         # negative input for credit, therefore we always have correct
